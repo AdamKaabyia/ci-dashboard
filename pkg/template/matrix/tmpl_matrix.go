@@ -55,6 +55,8 @@ func Generate(matrixTemplate string, matrices *v1.MatricesSpec, date string) ([]
 				return txt[pipe_pos+1:]
 			}
 		},
+
+		//need to adjust this
 		"artifacts_url": func(matrix v1.MatrixSpec, test v1.TestResult) string {
 			if test.TestSpec == nil {
 				return "INVALID"
@@ -64,13 +66,30 @@ func Generate(matrixTemplate string, matrices *v1.MatricesSpec, date string) ([]
 				// override test_matrix.ProwStep if ProwStep is test_spec.ProwStep is specified
 				prow_step = test.TestSpec.ProwStep
 			}
-			base := fmt.Sprintf("%s/%s/%s/artifacts/%s/%s",
-				matrix.ArtifactsURL, test.TestSpec.ProwName, test.BuildId, test.TestSpec.TestName, prow_step)
-			if test.TestSpec.IsCiOperator == nil || *test.TestSpec.IsCiOperator == true {
-				return base + "/artifacts"
+
+			var base string
+			if test.TestSpec.ProwType == "presubmit" {
+				if test.PullNumber == "" {
+					print("Missing pull number for %s", test.TestSpec.TestName)
+				}
+				base = fmt.Sprintf("%s/pull/%s/%s/%s/",
+					matrix.ArtifactsURL,
+					test.PullNumber,
+					test.TestSpec.ProwName,
+					test.BuildId)
 			} else {
-				return base
+				base = fmt.Sprintf("%s/%s/%s/artifacts/%s/%s",
+					matrix.ArtifactsURL,
+					test.TestSpec.ProwName,
+					test.BuildId,
+					test.TestSpec.TestName,
+					prow_step)
 			}
+
+			if test.TestSpec.IsCiOperator == nil || *test.TestSpec.IsCiOperator {
+				return base + "/artifacts"
+			}
+			return base
 		},
 		"spyglass_url": func(matrix v1.MatrixSpec, prowName string, test v1.TestResult) string {
 			return fmt.Sprintf("%s/%s/%s", matrix.ViewerURL, prowName, test.BuildId)
@@ -132,7 +151,7 @@ func Generate(matrixTemplate string, matrices *v1.MatricesSpec, date string) ([]
 		"test_message_types": func() []string {
 			return []string{"flake", "info", "warning", "error"}
 		},
-    }
+	}
 
 	tmpl := template.Must(template.New("runtime").Funcs(fmap).Parse(string(matrix_template)))
 

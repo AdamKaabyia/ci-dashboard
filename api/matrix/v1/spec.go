@@ -79,6 +79,9 @@ type TestResult struct {
 	OpenShiftVersion string
 	CiArtifactsVersion string
 
+	// New field for pull request number
+	PullNumber string `json:"pull_number,omitempty"`
+
 	/* *** */
 	TestSpec *TestSpec
 
@@ -88,9 +91,9 @@ type TestResult struct {
 
 	/* *** */
 
-	Ok int
+	Ok       int
 	Failures int
-	Ignored int
+	Ignored  int
 
 	FlakeFailure bool
 }
@@ -104,6 +107,10 @@ type TestSpec struct {
 
 	ProwName string        `json:"prow_name,omitempty"`
 	IsCiOperator *bool     `json:"is_ci_operator,omitempty"`
+
+	// New field to indicate the type of Prow job.
+	// If not specified, we default to "periodic".
+	ProwType string `json:"prow_type,omitempty"`
 
 	/* *** */
 

@@ -135,7 +135,7 @@ func PopulateTestFromToolboxLogs(test_result *v1.TestResult, toolbox_logs map[st
 		test_result.Failures += failures
 		test_result.Ignored += ignored
 
-		fmt.Println("--------------------------");
+		fmt.Println("--------------------------")
 	}
 
 	log.Debugf("Test: ok %d, failures %d, ignored %d, expected fail: %d",
@@ -182,7 +182,7 @@ func TraverseAllTestResults(matrices_spec *v1.MatricesSpec, cb func(test_result 
 func populateTestResult(test *v1.TestSpec, build_id string, finished_file artifacts.ArtifactResult) *v1.TestResult {
 	test_result := &v1.TestResult{
 		TestSpec: test,
-		BuildId: build_id,
+		BuildId:  build_id,
 		Messages: make(map[v1.TestMessageType]map[string]string),
 	}
 
@@ -243,7 +243,7 @@ func populateTestResult(test *v1.TestSpec, build_id string, finished_file artifa
 		test_result.OpenShiftVersion = strings.TrimSuffix(string(ocpVersion_content.Bytes), "\n")
 		test_result.StepExecuted = true
 	} else if err == artifacts.MissingPageError {
-			log.Infof("OpenShift version file (%s/%s) was not generated.", test.ProwName, test_result.BuildId)
+		log.Infof("OpenShift version file (%s/%s) was not generated.", test.ProwName, test_result.BuildId)
 	} else {
 		log.Warningf("Failed to read the OpenShift version (%s/%s): %v", test.ProwName, test_result.BuildId, err)
 	}
@@ -289,26 +289,42 @@ func populateTestResult(test *v1.TestSpec, build_id string, finished_file artifa
 }
 
 func populateTest(test_matrix *v1.MatrixSpec, test_group string, test *v1.TestSpec, test_history int) error {
+	// Step 1: Print initial details
+	log.Printf("Populating test: %s, Group: %s", test.TestName, test_group)
+	log.Printf("Using matrix: %+v", test_matrix)
 	test.TestGroup = test_group
 	test.Matrix = test_matrix
+	log.Printf("TestGroup set to: %s", test_group)
+	log.Printf("Matrix set to: %+v", test_matrix)
 
 	if test.ProwName == "" {
 		var branch string
 		if test.Variant != "" {
 			branch = fmt.Sprintf("%s-%s", test.Branch, test.Variant)
+			log.Printf("Variant detected, Branch and Variant combined: %s", branch)
 		} else {
 			branch = test.Branch
+			log.Printf("No variant detected, using Branch: %s", branch)
 		}
 
 		test.ProwName = fmt.Sprintf("%s-%s-%s", test_matrix.ProwConfig, branch, test.TestName)
+		log.Printf("Generated ProwName: %s", test.ProwName)
 	}
+
+	// Step 4: Fetching the last N test results
+	log.Printf("Fetching the last %d test results for ProwName: %s", test_history, test.ProwName)
 
 	test_build_ids, finished_files, err := artifacts.FetchLastNTestResults(test_matrix, test.ProwName, test_history,
 		"finished.json", artifacts.TypeJson)
 	if err != nil {
+		log.Printf("Error fetching test results: %v", err)
 		return fmt.Errorf("Failed to fetch the last %d test results for %s: %v", test_history, test.ProwName, err)
 	}
+
+	log.Printf("Successfully fetched %d test results", len(test_build_ids))
+
 	for _, build_id := range test_build_ids {
+
 		test_result := populateTestResult(test, build_id, finished_files[build_id])
 
 		test.OldTests = append(test.OldTests, test_result)

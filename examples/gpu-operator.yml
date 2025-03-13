@@ -1,6 +1,6 @@
 version: v1
 description: GPU Operator Test Matrix
-test_history: 15
+test_history: 1
 matrices:
   1_nightly:
     description: Red Hat OpenShift Nightly
@@ -17,105 +17,270 @@ matrices:
           test_name: nvidia-gpu-operator-e2e-24-6-x
           operator_version: "24.6"
           variant: "4.17"
-        - branch: main
-          test_name: nvidia-gpu-operator-e2e-24-9-x
-          operator_version: "24.9"
-          variant: "4.17"
-        - branch: main
-          test_name: nvidia-gpu-operator-e2e-master
-          operator_version: master
-          variant: "4.17"
 
-      90_418|OpenShift 4.18 - Nightly:
-        - branch: main
-          test_name: nvidia-gpu-operator-e2e-24-6-x
-          operator_version: "24.6"
-          variant: "4.18"
-        - branch: main
-          test_name: nvidia-gpu-operator-e2e-24-9-x
-          operator_version: "24.9"
-          variant: "4.18"
-        - branch: main
-          test_name: nvidia-gpu-operator-e2e-master
-          operator_version: master
-          variant: "4.18"
-
-  2_weekly:
-    description: Red Hat OpenShift Weekly
+  3_presubmit:
+    description: Red Hat OpenShift Pre-submit
     operator_name: GPU Operator
     viewer_url: https://prow.ci.openshift.org/view/gs/origin-ci-test/logs
-    artifacts_url: https://gcsweb-ci.apps.ci.l2s4.p1.openshiftapps.com/gcs/origin-ci-test/logs
+    artifacts_url: https://gcsweb-ci.apps.ci.l2s4.p1.openshiftapps.com/gcs/test-platform-results/pr-logs/pull/rh-ecosystem-edge_nvidia-ci
     artifacts_cache: cache
     repository_url: https://github.com/rh-ecosystem-edge/nvidia-ci
-    prow_config: periodic-ci-rh-ecosystem-edge-nvidia-ci
+    prow_config: pull-ci-rh-ecosystem-edge-nvidia-ci
+    prow_type: presubmit
     prow_step: gpu-operator-e2e
     tests:
-      81_412|OpenShift 4.12 - Weekly:
+      70_416|OpenShift 4.16 pre-submit:
         - branch: main
-          test_name: nvidia-gpu-operator-e2e-24-6-x
-          operator_version: "24.6"
-          variant: "4.12"
-        - branch: main
-          test_name: nvidia-gpu-operator-e2e-24-9-x
-          operator_version: "24.9"
-          variant: "4.12"
-        - branch: main
-          test_name: nvidia-gpu-operator-e2e-master
-          operator_version: master
-          variant: "4.12"
-
-      81_414|OpenShift 4.14 - Weekly:
-        - branch: main
-          test_name: nvidia-gpu-operator-e2e-24-6-x
-          operator_version: "24.6"
-          variant: "4.14"
-        - branch: main
-          test_name: nvidia-gpu-operator-e2e-24-9-x
-          operator_version: "24.9"
-          variant: "4.14"
-        - branch: main
-          test_name: nvidia-gpu-operator-e2e-master
-          operator_version: master
-          variant: "4.14"
-
-      81_415|OpenShift 4.15 - Weekly:
-        - branch: main
-          test_name: nvidia-gpu-operator-e2e-24-6-x
-          operator_version: "24.6"
-          variant: "4.15"
-        - branch: main
-          test_name: nvidia-gpu-operator-e2e-24-9-x
-          operator_version: "24.9"
-          variant: "4.15"
-        - branch: main
-          test_name: nvidia-gpu-operator-e2e-master
-          operator_version: master
-          variant: "4.15"
-
-      81_416|OpenShift 4.16 - Weekly:
-        - branch: main
-          test_name: nvidia-gpu-operator-e2e-24-6-x
-          operator_version: "24.6"
-          variant: "4.16"
-        - branch: main
-          test_name: nvidia-gpu-operator-e2e-24-9-x
-          operator_version: "24.9"
-          variant: "4.16"
-        - branch: main
-          test_name: nvidia-gpu-operator-e2e-master
+          test_name: stable-nvidia-gpu-operator-e2e-master
           operator_version: master
           variant: "4.16"
 
-      81_419|OpenShift 4.19 - Weekly:
-        - branch: main
-          test_name: nvidia-gpu-operator-e2e-24-6-x
-          operator_version: "24.6"
-          variant: "4.19"
-        - branch: main
-          test_name: nvidia-gpu-operator-e2e-24-9-x
-          operator_version: "24.9"
-          variant: "4.19"
-        - branch: main
-          test_name: nvidia-gpu-operator-e2e-master
-          operator_version: master
-          variant: "4.19"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#version: v1
+#description: GPU Operator Test Matrix
+#test_history: 15
+#matrices:
+#  1_nightly:
+#    description: Red Hat OpenShift Nightly
+#    operator_name: GPU Operator
+#    viewer_url: https://prow.ci.openshift.org/view/gs/origin-ci-test/logs
+#    artifacts_url: https://gcsweb-ci.apps.ci.l2s4.p1.openshiftapps.com/gcs/origin-ci-test/logs
+#    artifacts_cache: cache
+#    repository_url: https://github.com/rh-ecosystem-edge/nvidia-ci
+#    prow_config: periodic-ci-rh-ecosystem-edge-nvidia-ci
+#    prow_step: gpu-operator-e2e
+#    tests:
+#      90_417|OpenShift 4.17 - Nightly:
+#        - branch: main
+#          test_name: nvidia-gpu-operator-e2e-24-6-x
+#          operator_version: "24.6"
+#          variant: "4.17"
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-24-9-x
+##          operator_version: "24.9"
+##          variant: "4.17"
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-master
+##          operator_version: master
+##          variant: "4.17"
+##
+##      90_418|OpenShift 4.18 - Nightly:
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-24-6-x
+##          operator_version: "24.6"
+##          variant: "4.18"
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-24-9-x
+##          operator_version: "24.9"
+##          variant: "4.18"
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-master
+##          operator_version: master
+##          variant: "4.18"
+#
+##  2_weekly:
+##    description: Red Hat OpenShift Weekly
+##    operator_name: GPU Operator
+##    viewer_url: https://prow.ci.openshift.org/view/gs/origin-ci-test/logs
+##    artifacts_url: https://gcsweb-ci.apps.ci.l2s4.p1.openshiftapps.com/gcs/origin-ci-test/logs
+##    artifacts_cache: cache
+##    repository_url: https://github.com/rh-ecosystem-edge/nvidia-ci
+##    prow_config: periodic-ci-rh-ecosystem-edge-nvidia-ci
+##    prow_step: gpu-operator-e2e
+##    tests:
+##      81_412|OpenShift 4.12 - Weekly:
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-24-6-x
+##          operator_version: "24.6"
+##          variant: "4.12"
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-24-9-x
+##          operator_version: "24.9"
+##          variant: "4.12"
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-master
+##          operator_version: master
+##          variant: "4.12"
+##
+##      81_414|OpenShift 4.14 - Weekly:
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-24-6-x
+##          operator_version: "24.6"
+##          variant: "4.14"
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-24-9-x
+##          operator_version: "24.9"
+##          variant: "4.14"
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-master
+##          operator_version: master
+##          variant: "4.14"
+##
+##      81_415|OpenShift 4.15 - Weekly:
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-24-6-x
+##          operator_version: "24.6"
+##          variant: "4.15"
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-24-9-x
+##          operator_version: "24.9"
+##          variant: "4.15"
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-master
+##          operator_version: master
+##          variant: "4.15"
+##
+##      81_416|OpenShift 4.16 - Weekly:
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-24-6-x
+##          operator_version: "24.6"
+##          variant: "4.16"
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-24-9-x
+##          operator_version: "24.9"
+##          variant: "4.16"
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-master
+##          operator_version: master
+##          variant: "4.16"
+##
+##      81_419|OpenShift 4.19 - Weekly:
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-24-6-x
+##          operator_version: "24.6"
+##          variant: "4.19"
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-24-9-x
+##          operator_version: "24.9"
+##          variant: "4.19"
+##        - branch: main
+##          test_name: nvidia-gpu-operator-e2e-master
+##          operator_version: master
+##          variant: "4.19"
+##
+#  #old url example:
+#  #https://gcsweb-ci.apps.ci.l2s4.p1.openshiftapps.com/gcs/test-platform-results/logs/periodic-ci-rh-ecosystem-edge-nvidia-ci-main-4.17-nvidia-gpu-operator-e2e-24-6-x/1897150331712704512/artifacts/nvidia-gpu-operator-e2e-24-6-x/gpu-operator-e2e/
+#  #took this from https://github.com/openshift-psap/ci-dashboard/pull/95/files
+#  #adjusted to match this(from the ticket):
+#  #https://gcsweb-ci.apps.ci.l2s4.p1.openshiftapps.com/gcs/test-platform-results/pr-logs/pull/rh-ecosystem-edge_nvidia-ci/66/pull-ci-rh-ecosystem-edge-nvidia-ci-main-4.14-stable-nvidia-gpu-operator-e2e-master/1896303033885659136/
+#  3_presubmit:
+#    description: Red Hat OpenShift Pre-submit
+#    operator_name: GPU Operator
+#    viewer_url: https://prow.ci.openshift.org/view/gs/origin-ci-test/logs
+#    artifacts_url: https://gcsweb-ci.apps.ci.l2s4.p1.openshiftapps.com/gcs/test-platform-results/pr-logs/pull/rh-ecosystem-edge_nvidia-ci
+#    artifacts_cache: cache
+#    repository_url: https://github.com/rh-ecosystem-edge/nvidia-ci
+#    prow_config: pull-ci-rh-ecosystem-edge-nvidia-ci
+#    prow_step: gpu-operator-e2e
+#    tests:
+##      70_412|OpenShift 4.12 pre-submit:
+##        - branch: main
+##          test_name: stable-nvidia-gpu-operator-e2e-24-6-x
+##          operator_version: "24.6"
+##          variant: "4.12"
+##        - branch: main
+##          test_name: stable-nvidia-gpu-operator-e2e-24-9-x
+##          operator_version: "24.9"
+##          variant: "4.12"
+##        - branch: main
+##          test_name: stable-nvidia-gpu-operator-e2e-master
+##          operator_version: master
+##          variant: "4.12"
+##
+##      70_414|OpenShift 4.14 pre-submit:
+##        - branch: main
+##          test_name: stable-nvidia-gpu-operator-e2e-24-6-x
+##          operator_version: "24.6"
+##          variant: "4.14"
+##        - branch: main
+##          test_name: stable-nvidia-gpu-operator-e2e-24-9-x
+##          operator_version: "24.9"
+##          variant: "4.14"
+##        - branch: main
+##          test_name: stable-nvidia-gpu-operator-e2e-master
+##          operator_version: master
+##          variant: "4.14"
+##
+##      70_415|OpenShift 4.15 pre-submit:
+##        - branch: main
+##          test_name: stable-nvidia-gpu-operator-e2e-24-6-x
+##          operator_version: "24.6"
+##          variant: "4.15"
+##        - branch: main
+##          test_name: stable-nvidia-gpu-operator-e2e-24-9-x
+##          operator_version: "24.9"
+##          variant: "4.15"
+##        - branch: main
+##          test_name: stable-nvidia-gpu-operator-e2e-master
+##          operator_version: master
+##          variant: "4.15"
+##
+#      70_416|OpenShift 4.16 pre-submit:
+#        - branch: main
+#          test_name: stable-nvidia-gpu-operator-e2e-24-6-x
+#          operator_version: "24.6"
+#          variant: "4.16"
+#        - branch: main
+#          test_name: stable-nvidia-gpu-operator-e2e-24-9-x
+#          operator_version: "24.9"
+#          variant: "4.16"
+#        - branch: main
+#          test_name: stable-nvidia-gpu-operator-e2e-master
+#          operator_version: master
+#          variant: "4.16"
+#
+##      70_417|OpenShift 4.17 pre-submit:
+##        - branch: main
+##          test_name: stable-nvidia-gpu-operator-e2e-24-6-x
+##          operator_version: "24.6"
+##          variant: "4.17"
+##        - branch: main
+##          test_name: stable-nvidia-gpu-operator-e2e-24-9-x
+##          operator_version: "24.9"
+##          variant: "4.17"
+##        - branch: main
+##          test_name: stable-nvidia-gpu-operator-e2e-master
+##          operator_version: master
+##          variant: "4.17"
+##
+##      70_418|OpenShift 4.18 pre-submit:
+##        - branch: main
+##          test_name: stable-nvidia-gpu-operator-e2e-24-6-x
+##          operator_version: "24.6"
+##          variant: "4.18"
+##        - branch: main
+##          test_name: stable-nvidia-gpu-operator-e2e-24-9-x
+##          operator_version: "24.9"
+##          variant: "4.18"
+##        - branch: main
+##          test_name: stable-nvidia-gpu-operator-e2e-master
+##          operator_version: master
+##          variant: "4.18"
+##
+##      70_419|OpenShift 4.19 pre-submit:
+##        - branch: main
+##          test_name: stable-nvidia-gpu-operator-e2e-24-6-x
+##          operator_version: "24.6"
+##          variant: "4.19"
+##        - branch: main
+##          test_name: stable-nvidia-gpu-operator-e2e-24-9-x
+##          operator_version: "24.9"
+##          variant: "4.19"
+##        - branch: main
+##          test_name: stable-nvidia-gpu-operator-e2e-master
+##          operator_version: master
+##          variant: "4.19"
