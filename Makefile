@@ -3,7 +3,7 @@ generate_daily_matrix: \
 
 # GPU Operator
 
-gpu: output/gpu-operator_daily-matrix.html output/gpu-operator_daily-matrix.html
+gpu: output/gpu-operator_daily-matrix.html output/gpu-operator_daily-matrix.md
 
 output/gpu-operator_daily-matrix.md: templates/daily_matrix.mail.tmpl.md
 	go run cmd/main.go --debug daily_matrix \
@@ -37,3 +37,12 @@ matrix_benchmarks:
 
 build:
 	go build -o ci-dashboard cmd/main.go
+
+# Clean command to remove generated files
+clean:
+	rm -rf output/
+	rm -f ci-dashboard
+
+.PHONY: clean
+
+build_clean_generate: clean build output/gpu-operator_daily-matrix.html

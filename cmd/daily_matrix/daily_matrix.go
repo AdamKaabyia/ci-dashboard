@@ -1,6 +1,7 @@
 package daily_matrix
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -13,14 +14,13 @@ import (
 	"github.com/openshift-psap/ci-dashboard/pkg/config"
 	"github.com/openshift-psap/ci-dashboard/pkg/populate"
 	matrix_tpl "github.com/openshift-psap/ci-dashboard/pkg/template/matrix"
-
 )
 
 const (
-	DefaultConfigFile  = "examples/gpu-operator.yml"
-	DefaultOutputFile = "output/gpu-operator_daily-matrix.html"
+	DefaultConfigFile   = "examples/gpu-operator.yml"
+	DefaultOutputFile   = "output/gpu-operator_daily-matrix.html"
 	DefaultTemplateFile = "templates/daily_matrix.tmpl.html"
-	DefaultTestHistory = -1
+	DefaultTestHistory  = -1
 )
 
 var log = logrus.New()
@@ -30,10 +30,10 @@ func GetLogger() *logrus.Logger {
 }
 
 type Flags struct {
-	ConfigFile string
-	OutputFile string
+	ConfigFile   string
+	OutputFile   string
 	TemplateFile string
-	TestHistory int
+	TestHistory  int
 }
 
 type Context struct {
@@ -94,14 +94,14 @@ func BuildCommand() *cli.Command {
 
 func saveGeneratedHtml(generated_html []byte, f *Flags) error {
 	output_dir, err := filepath.Abs(filepath.Dir(f.OutputFile))
-    if err != nil {
+	if err != nil {
 		return fmt.Errorf("Failed to get output directory for %s: %v", f.OutputFile, err)
-    }
+	}
 
 	err = os.MkdirAll(output_dir, os.ModePerm)
 	if err != nil {
 		return fmt.Errorf("Failed to create output directory %s: %v", output_dir, err)
-    }
+	}
 
 	err = ioutil.WriteFile(f.OutputFile, generated_html, 0644)
 	if err != nil {
@@ -112,30 +112,59 @@ func saveGeneratedHtml(generated_html []byte, f *Flags) error {
 }
 
 func daily_matrixWrapper(c *cli.Context, f *Flags) error {
+	log.Infof("Starting daily matrix wrapper function.")
+
+	// Step 1: Parse the config file
+	log.Infof("Parsing the config file: %s", f.ConfigFile)
 	matricesSpec, err := config.ParseMatricesConfigFile(f.ConfigFile)
+
 	if err != nil {
+		log.Errorf("Error parsing config file: %v", err)
 		return fmt.Errorf("error parsing config file: %v", err)
 	}
+	// Convert matricesSpec to JSON format
+	matricesJSON, err := json.MarshalIndent(matricesSpec, "", "  ")
+	if err != nil {
+		log.Errorf("Error marshaling matricesSpec to JSON: %v", err)
+		return fmt.Errorf("error marshaling matricesSpec to JSON: %v", err)
+	}
 
+	log.Infof("MatricesSpec successfully parsed (JSON format):\n%s", string(matricesJSON))
+
+	// Step 2: Populate the test matrices
+	log.Infof("Populating test matrices with history of %d tests.", f.TestHistory)
 	if err = populate.PopulateTestMatrices(matricesSpec, f.TestHistory); err != nil {
+		log.Errorf("Error fetching the matrix results: %v", err)
 		return fmt.Errorf("error fetching the matrix results: %v", err)
 	}
+	log.Infof("Successfully populated test matrices.")
 
+	// Step 3: Populate the test step logs
+	log.Infof("Populating test step logs.")
 	populate.PopulateTestStepLogs(matricesSpec)
+	log.Infof("Test step logs populated.")
 
+	// Step 4: Generate the matrix page
+	log.Infof("Generating the matrix page using template: %s", f.TemplateFile)
 	currentTime := time.Now()
 	generation_date := currentTime.Format("2006-01-02 15h04")
-
 	generated_html, err := matrix_tpl.Generate(f.TemplateFile, matricesSpec, generation_date)
 	if err != nil {
+		log.Errorf("Error generating the matrix page from the template: %v", err)
 		return fmt.Errorf("error generating the matrix page from the template: %v", err)
 	}
+	log.Infof("Matrix page successfully generated.")
 
+	// Step 5: Save the generated HTML
+	log.Infof("Saving generated HTML to '%s'.", f.OutputFile)
 	if err = saveGeneratedHtml(generated_html, f); err != nil {
+		log.Errorf("Error saving the generated matrix page: %v", err)
 		return fmt.Errorf("error saving the generated matrix page: %v", err)
 	}
 
+	// Step 6: Final confirmation
 	log.Infof("Daily test matrix saved into '%s'", f.OutputFile)
+	log.Infof("Completed daily matrix wrapper function successfully.")
 
 	return nil
 }

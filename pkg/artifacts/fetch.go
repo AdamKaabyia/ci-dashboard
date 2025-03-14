@@ -42,6 +42,11 @@ type ArtifactResult struct {
 	Bytes []byte
 }
 
+// PullRequest represents a GitHub pull request with the fields we need.
+type PullRequest struct {
+	Number int `json:"number"`
+}
+
 type JsonResult map[string]interface{}
 type JsonArray []interface{}
 
@@ -144,7 +149,7 @@ func fetchJsonArtifact(test_matrix *v1.MatrixSpec, path string) (JsonResult, err
 	return result, nil
 }
 
-func fetchJsonArrayArtifact(test_matrix *v1.MatrixSpec, path string) (JsonArray, error){
+func fetchJsonArrayArtifact(test_matrix *v1.MatrixSpec, path string) (JsonArray, error) {
 	content, err := fetchArtifact(test_matrix, path)
 	if err != nil {
 		return nil, err
@@ -219,12 +224,17 @@ func FetchLastTestResult(test_matrix *v1.MatrixSpec, test *v1.TestSpec, filename
 }
 
 func FetchLastNTestResults(test_matrix *v1.MatrixSpec, prow_name string, test_history int, filename string, filetype ArtifactType) ([]string, map[string]ArtifactResult, error) {
+	log.Infof("Fetching last %d test results for test matrix: %s, prow name: %s, filename: %s, filetype: %v",
+		test_history, test_matrix.Name, prow_name, filename, filetype)
+
 	if test_history <= 0 {
+		log.Errorf("Invalid number of test history required (%d)", test_history)
 		panic(fmt.Sprintf("Invalid number of test history required (%d)", test_history))
 	}
 	test_list_path := fmt.Sprintf("%s/", prow_name)
 	test_list_html, err := fetchHtmlArtifact(test_matrix, test_list_path)
 	if err != nil {
+		log.Errorf("Error fetching the tests of %s / %s: %v", test_matrix.Name, prow_name, err)
 		return nil, nil, fmt.Errorf("error fetching the tests of %s / %s: %v", test_matrix.Name, prow_name, err)
 	}
 
@@ -232,6 +242,7 @@ func FetchLastNTestResults(test_matrix *v1.MatrixSpec, prow_name string, test_hi
 
 	build_ids, err := ListFilesInDirectory(test_list_html, true, false)
 	if err != nil {
+		log.Errorf("Error fetching last test results: %v", err)
 		return nil, nil, fmt.Errorf("error fetching last test results: %v", err)
 	}
 
@@ -240,11 +251,14 @@ func FetchLastNTestResults(test_matrix *v1.MatrixSpec, prow_name string, test_hi
 		build_ids = build_ids[len(build_ids) - test_history:]
 	}
 
+	log.Debugf("Filtered to last %d build IDs", len(build_ids))
+
 	build_ids = reverseStringArray(build_ids)
 
 	// `build_ids` order is now "newest first"
 
 	for _, test_build_id := range build_ids {
+		log.Infof("Fetching test result for build ID: %s", test_build_id)
 		test_file, err := fetchTestResult(test_matrix, prow_name, test_build_id, filename, filetype)
 		if (err != nil) {
 			log.Warningf("error fetching the results of %s:%s/%s (%s): %v",
@@ -254,7 +268,7 @@ func FetchLastNTestResults(test_matrix *v1.MatrixSpec, prow_name string, test_hi
 
 		test_results[test_build_id] = test_file
 	}
-
+	log.Infof("Successfully fetched test results for %d builds", len(test_results))
 	return build_ids, test_results, err
 }
 
