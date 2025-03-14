@@ -3,17 +3,18 @@ package matrix
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"html/template"
+	"io/ioutil"
 	"strings"
 	"unicode/utf8"
+
 	v1 "github.com/openshift-psap/ci-dashboard/api/matrix/v1"
 )
 
 type TemplateBase struct {
-	Spec *v1.MatricesSpec
+	Spec        *v1.MatricesSpec
 	Description string
-	Date string
+	Date        string
 }
 
 func Generate(matrixTemplate string, matrices *v1.MatricesSpec, date string) ([]byte, error) {
@@ -28,26 +29,26 @@ func Generate(matrixTemplate string, matrices *v1.MatricesSpec, date string) ([]
 	}
 
 	fmap := template.FuncMap{
-		"md_section" : func(s string) string {
+		"md_section": func(s string) string {
 			return strings.Repeat("=", utf8.RuneCountInString(s))
 		},
-		"md_subsection" : func(s string) string {
+		"md_subsection": func(s string) string {
 			return strings.Repeat("-", utf8.RuneCountInString(s))
 		},
-		"unescape_html" : func(s string) template.HTML {
+		"unescape_html": func(s string) template.HTML {
 			return template.HTML(s)
 		},
-        "nb_last_test": func() string {
+		"nb_last_test": func() string {
 			return fmt.Sprintf("%d", matrices.TestHistory)
 		},
-        "no_test_history": func(test v1.TestSpec) []int {
+		"no_test_history": func(test v1.TestSpec) []int {
 			arr := []int{}
 			for i := len(test.OldTests); i < matrices.TestHistory; i++ {
 				arr = append(arr, i)
 			}
 			return arr
 		},
-        "group_name": func(txt string) string {
+		"group_name": func(txt string) string {
 			pipe_pos := strings.Index(txt, "|")
 			if pipe_pos == -1 {
 				return txt
@@ -66,7 +67,7 @@ func Generate(matrixTemplate string, matrices *v1.MatricesSpec, date string) ([]
 			}
 
 			var base string
-			if test.TestSpec.ProwType == "presubmit" {
+			if matrix.ProwType == "presubmit" {
 				if test.PullNumber == "" {
 					print("Missing pull number for %s", test.TestSpec.TestName)
 				}
@@ -149,7 +150,7 @@ func Generate(matrixTemplate string, matrices *v1.MatricesSpec, date string) ([]
 		"test_message_types": func() []string {
 			return []string{"flake", "info", "warning", "error"}
 		},
-    }
+	}
 
 	tmpl := template.Must(template.New("runtime").Funcs(fmap).Parse(string(matrix_template)))
 
