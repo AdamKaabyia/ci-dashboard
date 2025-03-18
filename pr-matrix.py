@@ -38,11 +38,14 @@ def extract_test_names(pr_url):
 
 
 def extract_versions(test_name):
-   ocp_match = re.search(r"4\\.\\d+", test_name)
-   gpu_operator_match = re.search(r"e2e-(\\d+-\\d+|master)", test_name)
-   ocp_version = ocp_match.group(0) if ocp_match else "Unknown"
-   gpu_operator_version = gpu_operator_match.group(1) if gpu_operator_match else "Unknown"
-   return ocp_version, gpu_operator_version
+    ocp_match = re.search(r"4\.\d+", test_name)  
+    gpu_operator_match = re.search(r"e2e-(\d+-\d+(-\d+)?|master)", test_name)  
+    
+    ocp_version = ocp_match.group(0) if ocp_match else "Unknown"
+    gpu_operator_version = gpu_operator_match.group(1) if gpu_operator_match else "Unknown"
+    
+    return ocp_version, gpu_operator_version
+
 
 
 def main():
